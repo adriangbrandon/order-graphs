@@ -1,0 +1,22 @@
+# complete order graph, d=5, bidirectional model, 20 edges
+# one edge per line: source order, label (target = label moved to the front)
+13254 4
+14325 2
+14325 5
+15432 2
+15432 3
+21543 3
+25314 1
+25314 4
+31542 5
+32154 1
+32154 4
+32154 5
+42531 1
+43215 1
+43215 2
+43215 5
+53142 2
+53214 4
+54321 1
+54321 2

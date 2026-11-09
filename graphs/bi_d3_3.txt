@@ -1,0 +1,5 @@
+# complete order graph, d=3, bidirectional model, 3 edges
+# one edge per line: source order, label (target = label moved to the front)
+132 2
+213 3
+321 1

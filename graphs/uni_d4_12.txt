@@ -1,0 +1,14 @@
+# complete order graph, d=4, unidirectional model, 12 edges
+# one edge per line: source order, label (target = label moved to the front)
+1324 4
+1432 2
+1432 3
+2143 3
+2143 4
+2431 1
+3142 2
+3214 1
+3214 4
+4213 3
+4321 1
+4321 2
