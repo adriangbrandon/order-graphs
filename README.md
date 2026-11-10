@@ -2,7 +2,8 @@
 
 Companion code for the paper on the size of complete order graphs (Becker, Gómez-Brandón,
 Navarro, Prezza). Everything is Python 3 (standard library), except `tail_ilp.py` (needs
-NumPy and SciPy ≥ 1.9 for HiGHS) and the C++17 version of the greedy heuristic.
+NumPy and SciPy ≥ 1.9 for HiGHS), `gurobi_solve.py` and `lns.py` (need `gurobipy` and a
+Gurobi license), and the C++17 version of the greedy heuristic.
 
 Model: attributes are `1..d`, nodes are orders (permutations), and an edge labeled `a` goes from
 `π` to `a·π` (`a` moved to the front). A requirement `(S,x)` is served by a path with `|S|+1`
@@ -15,14 +16,14 @@ edges labeled `S ∪ {x}`, with `x` first or last (only last in the unidirection
 | `ordergraph_check.py` | Completeness checker, lower bounds `LB_bi`, `LB_uni`, and the SCD-based construction `G_d`. Run without arguments to reproduce the checks in the paper; `python3 ordergraph_check.py 10` also builds and checks `G_d` up to `d = 10`. |
 | `check_graph.py` | Checks graph files (one edge per line, `order label`). Uses the unidirectional model if the file name contains `uni` or `--uni` is given. |
 | `greedy_ordergraph.cpp` | Connection-aware greedy set cover on the De Bruijn graph (C++, fast). Writes the selected strings. |
-| `decode_verify.py` | Decodes the strings written by the C++ program into an order graph and checks it. |
+| `decode_verify.py` | Decodes De Bruijn strings (from the C++ program or `gurobi_solve.py`/`lns.py`) into an order graph and checks it. |
 | `greedy_ordergraph.py` | The same greedy heuristic in pure Python (slower; runs faster under PyPy). |
 | `tail_ilp.py` | Exact ILP on distinct tails, with the per-set cuts and symmetry fixing, solved with HiGHS through SciPy. |
 | `tail_decode.py` | Lifts an ILP solution (list of tails) to an order graph and checks it. |
 | `compact.py` | Encoder/decoder of the compact bracket format used in the appendix. |
 | `edges.py` | The short decoder printed in the appendix: `edges(start, s)` lists the edges of a component. |
-| `gurobi_solve.py` | Exact ILP solver using gurobi for both the bidirectional and unidirectional case. Set D and BIDIRECTIONAL at the beginning of the file. Requires gurobi license.
-| `lns.py` | Large neighborhood search using gurobi for improving non-optimal solutions found by `gurobi_solve.py`. Requires gurobi license.
+| `gurobi_solve.py` | Exact ILP on distinct tails solved with Gurobi, bidirectional or unidirectional. Set `D`, `BIDIRECTIONAL` and `TIME_LIMIT` at the beginning of the file. Writes `solution_d{D}_{bi\|uni}.json` (tails) and `words_d{D}_{bi\|uni}.json` (De Bruijn strings). Requires a Gurobi license. |
+| `lns.py` | Large neighborhood search with Gurobi, warm-started from the solution of `gurobi_solve.py`; overwrites its files whenever it improves it. Settings (`MINUTES`, `STEP_SECONDS`, `SIZE`, `SEED`) at the beginning of the file. Requires a Gurobi license. |
 | `graphs/` | The best order graphs of the paper, `{bi,uni}_d{d}_{edges}.txt`, and `compact.json` with their compact encodings. |
 
 ## Usage
@@ -43,6 +44,12 @@ python3 greedy_ordergraph.py 6 --uni --seeds 10
 python3 tail_ilp.py 6 --uni --time 600
 python3 tail_decode.py tail_ilp_uni_d6.txt 6 --uni --out graph.txt
 
+# exact ILP with Gurobi (requires a Gurobi license; set D and BIDIRECTIONAL in gurobi_solve.py)
+python3 gurobi_solve.py      # writes solution_d7_bi.json and words_d7_bi.json
+python3 lns.py               # improves solution_d7_bi.json in place
+python3 -c 'import json; print("\n".join(json.load(open("words_d7_bi.json"))))' > strings.txt
+python3 decode_verify.py strings.txt --out graph.txt     # add --uni if BIDIRECTIONAL = False
+
 # compact format
 python3 -c 'from edges import edges; print(edges("123456", "3[6[5]2]4"))'
 ```
@@ -51,4 +58,4 @@ The C++ program accepts `2 ≤ d ≤ 9`. Running times on a single core: seconds
 minutes for `d = 8`, and several hours for `d = 9` (about 5 GB of memory).
 For `d ≥ 7`, the optimal and best known graphs in `graphs/` were obtained by solving the
 distinct-tail ILP with Gurobi (branch and bound, and its large neighborhood search warm-started
-from branch-and-bound solutions); that Gurobi setup is not included here.
+from branch-and-bound solutions).
