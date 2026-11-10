@@ -21,6 +21,8 @@ edges labeled `S ∪ {x}`, with `x` first or last (only last in the unidirection
 | `tail_decode.py` | Lifts an ILP solution (list of tails) to an order graph and checks it. |
 | `compact.py` | Encoder/decoder of the compact bracket format used in the appendix. |
 | `edges.py` | The short decoder printed in the appendix: `edges(start, s)` lists the edges of a component. |
+| `gurobi_solve.py` | Exact ILP solver using gurobi for both the bidirectional and unidirectional case. Set D and BIDIRECTIONAL at the beginning of the file. Requires gurobi license.
+| `lns.py` | Large neighborhood search using gurobi for improving non-optimal solutions found by `gurobi_solve.py`. Requires gurobi license.
 | `graphs/` | The best order graphs of the paper, `{bi,uni}_d{d}_{edges}.txt`, and `compact.json` with their compact encodings. |
 
 ## Usage
